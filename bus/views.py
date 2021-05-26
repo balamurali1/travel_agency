@@ -213,6 +213,7 @@ def trip_create(request):
 
 #UPDATAE PROCESS
 def trip_update(request,pk):
+	message = ""
 	drivers = Passenger.objects.filter(is_driver=True)  
 	passengers = Passenger.objects.all()
 	context = {"passengers":passengers,"drivers":drivers}
@@ -220,23 +221,25 @@ def trip_update(request,pk):
 	trip_obj = Trip.objects.get(id=pk)
 	if request.method == "POST":
 		data = request.POST
+		driver_objs = Passenger.objects.filter(is_driver=True,id=data.get("trip_driver"))
 		trip_obj.source = data.get('source')
 		trip_obj.destination = data.get('destination')
 		trip_obj.no_of_kms = data.get('no_of_kms')
 		trip_obj.status = data.get('status')
-		trip_obj.driver = data.get('driver')
-
-		#trip_obj.driver = data.get('Passengers')
+		# trip_obj.driver = data.get('driver')
+		trip_obj.driver = driver_objs[0]
+		trip_obj.save()
 
 		for passenger_id in data.getlist('Passengers'):
 			passenger_obj =Passenger.objects.get(id= passenger_id)   #ManyToMany Process
 			trip_obj.Passengers.add(passenger_obj)
-		trip_obj.save()
+		
 
-	
+		message = 'Passenger update successfully'
 		return redirect("/trip/trip1/")
-	 
+	context.update({"msg":message})
 	return render(request,'bus/update3.html',{'trip':trip_obj})
+	#return render(request,'bus/update3.html',context)
 
 
 
