@@ -92,7 +92,7 @@ def car_create(request):
 			capacity=data.get("car_capacity"),
 			number=data.get("car_number"))
 		car_object.save()
-		message = 'Car created successfully!!!!'
+		message = 'Car created successfully.....'
 		return redirect("/car/car1/")
 		
 	return render(request,'bus/create1.html',{'msg':message})
