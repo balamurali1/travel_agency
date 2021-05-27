@@ -9,13 +9,13 @@ from . models import Trip
 
 #############################Bus Information#############
  
-def primary(request):
-	return render(request,'bus/primary.html')
+# def primary(request): 
+# 	return render(request,'bus/primary.html')
 
 
-def home(request):
-	data = Bus.objects.all()
-	return render(request,'bus/home.html',{'data':data})
+# def home(request):
+# 	data = Bus.objects.all()
+# 	return render(request,'bus/home.html',{'data':data})
 
 
 #CREATE PROCESS
@@ -78,9 +78,9 @@ def bus_delete(request,pk):
 
 ###########################Car Information###############
 
-def home1(request):
-	car_data = Car.objects.all()
-	return render(request,'bus/home1.html',{'data':car_data})
+# def home1(request):
+# 	car_data = Car.objects.all()
+# 	return render(request,'bus/home1.html',{'data':car_data})
 
 #Create Process
 def car_create(request):
@@ -126,9 +126,9 @@ def car_delete(request,pk):
 
 #############################Passenger information###########
 
-def home2(request):
-	passenger_data = Passenger.objects.all()
-	return render(request,'bus/home2.html',{'data':passenger_data})
+# def home2(request):
+# 	passenger_data = Passenger.objects.all()
+# 	return render(request,'bus/home2.html',{'data':passenger_data})
 
 
 #Create Process
@@ -178,9 +178,9 @@ def passenger_delete(request,pk):
 
 ####################Trip information##############
 
-def home3(request):
-	trip_data = Trip.objects.all()
-	return render(request,'bus/home3.html',{'data':trip_data})
+# def home3(request):
+# 	trip_data = Trip.objects.all()
+# 	return render(request,'bus/home3.html',{'data':trip_data})
 
 
 #Create Process

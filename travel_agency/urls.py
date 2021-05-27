@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from bus.views import primary
-
+# from bus.views import primary
+from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path("",primary),
+    #path("",primary),
+    path("",TemplateView.as_view(template_name="bus/primary.html")),
+
 
     path("bus/",include("bus.urls")),
 
