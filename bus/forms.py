@@ -18,7 +18,7 @@ class PassengerForm(forms.ModelForm):
 		model = Passenger
 		fields = "__all__"
 
-##########Trip Form###############
+##########Trip Form#########
 
 class TripForm(forms.ModelForm):
 	class Meta:
