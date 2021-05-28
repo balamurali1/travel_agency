@@ -1,10 +1,10 @@
 {% extends "bus/base.html" %}
 {% block content %}
-
+ 
 	<h1>{{msg}}</h1> 
 	<form method="POST">
 		{% csrf_token %}
-		Source:<input type="text" name="trip_source">
+		<!-- Source:<input type="text" name="trip_source">
 		Destination:<input type="text" name="trip_destination">
 		No-Of-Kms:<input type="text" name="trip_kms">
 
@@ -26,6 +26,9 @@
 				<option value="{{passenger.id}}">{{passenger.name}}</option>
 			{% endfor %}
 		</select> 
+ -->
+
+ 		{{ form.as_p }}
 
 		<input type="submit" name="" value="create Trip">
 	</form>

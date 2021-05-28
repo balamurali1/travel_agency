@@ -1,9 +1,14 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from . models import Bus
-from . models import Car
-from . models import Passenger
-from . models import Trip
+from bus.models import Bus
+from bus.models import Car
+from bus.models import Passenger
+from bus.models import Trip
+
+from bus.forms import VehicleForm
+from bus.forms import PassengerForm
+from bus.forms import TripForm
+
 
 # Create your views here.
 
@@ -75,7 +80,7 @@ def bus_delete(request,pk):
 		return render(request,'bus/delete.html',{'bus':bus_obj})
 
 
-
+ 
 ###########################Car Information###############
 
 # def home1(request):
@@ -86,31 +91,44 @@ def bus_delete(request,pk):
 def car_create(request):
 	message = ""
 	if request.method == 'POST':
-		data = request.POST
-		car_object = Car(name=data.get("car_name"),
-			fair=data.get("car_fair"),
-			capacity=data.get("car_capacity"),
-			number=data.get("car_number"))
-		car_object.save()
-		message = 'Car created successfully.....'
-		return redirect("/car/car1/")
+		form = VehicleForm(data = request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect("/car/car1/")
+		else:
+			message = form.errors
+
+	else:
+		form = VehicleForm()	
 		
-	return render(request,'bus/create1.html',{'msg':message})
+	return render(request,'bus/create1.html',{'msg':message,'form':form})
 
 
 #UPDATAE PROCESS
 def car_update(request,pk):
-	car_obj = Car.objects.get(id=pk)
-	if request.method == "POST":
-		data = request.POST
-		car_obj.name = data.get('name')
-		car_obj.number = data.get('number')
-		car_obj.capacity = data.get('capacity')
-		car_obj.fair = data.get('fair')
-		car_obj.save()
-		return redirect("/car/car1/")
+	# car_obj = Car.objects.get(id=pk)
+	# if request.method == "POST":
+	# 	data = request.POST
+	# 	car_obj.name = data.get('name')
+	# 	car_obj.number = data.get('number')
+	# 	car_obj.capacity = data.get('capacity')
+	# 	car_obj.fair = data.get('fair')
+	# 	car_obj.save()
+	# 	return redirect("/car/car1/")
 
-	return render(request,'bus/update1.html',{'car':car_obj})
+	# return render(request,'bus/update1.html',{'car':car_obj})
+
+	if request.method == 'POST':
+		car_obj = Car.objects.get(id=pk)
+		form = VehicleForm(request.POST,instance =car_obj)
+		if form.is_valid():
+			form.save()
+			return redirect("/car/car1/")
+	else:
+		car_obj =Car.objects.get(id=pk)
+		form = VehicleForm(instance =car_obj)
+
+	return render(request,'bus/update1.html',{'form':form})	
 
 
 #DELETE PROCESS is Optional Process
@@ -135,34 +153,45 @@ def car_delete(request,pk):
 def passenger_create(request):
 	message = ""
 	if request.method == 'POST':
-		data = request.POST
-		passenger_object =Passenger (name=data.get("pass_name"),
-			phone=data.get("pass_phone"),
-			dob=data.get("pass_dob"),
-			address=data.get("pass_address"),
-			is_driver=data.get("pass_driver"))
-
-		passenger_object.save()
-		message = 'Passenger created successfully'
-		return redirect("/passenger/passenger1/")
+		form = PassengerForm(data = request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect("/passenger/passenger1/")
+		else:
+			message = form.errors
+	else:
+		form = PassengerForm()	
 		
-	return render(request,'bus/create2.html',{'msg':message})
+	return render(request,'bus/create2.html',{'msg':message,'form':form})
 	
 
 #UPDATAE PROCESS
 def passenger_update(request,pk):
-	passenger_obj = Passenger.objects.get(id=pk)
-	if request.method == "POST":
-		data = request.POST
-		passenger_obj.name = data.get('name')
-		passenger_obj.phone = data.get('phone')
-		passenger_obj.dob = data.get('dob')
-		passenger_obj.address = data.get('address')
-		passenger_obj.is_driver = data.get('is_driver')
-		passenger_obj.save()
-		return redirect("/passenger/passenger1/")
+	# passenger_obj = Passenger.objects.get(id=pk)
+	# if request.method == "POST":
+	# 	data = request.POST
+	# 	passenger_obj.name = data.get('name')
+	# 	passenger_obj.phone = data.get('phone')
+	# 	passenger_obj.dob = data.get('dob')
+	# 	passenger_obj.address = data.get('address')
+	# 	passenger_obj.is_driver = data.get('is_driver')
+	# 	passenger_obj.save()
+	# 	return redirect("/passenger/passenger1/")
 
-	return render(request,'bus/update2.html',{'passenger':passenger_obj})
+	# return render(request,'bus/update2.html',{'passenger':passenger_obj})
+
+
+	if request.method == 'POST':
+		passenger_obj = Passenger.objects.get(id=pk)
+		form = PassengerForm(request.POST,instance =passenger_obj)
+		if form.is_valid():
+			form.save()
+			return redirect("/passenger/passenger1/")
+	else:
+		passenger_obj = Passenger.objects.get(id=pk)
+		form = PassengerForm(instance =passenger_obj)
+
+	return render(request,'bus/update2.html',{'form':form})
 
 
 #DELETE PROCESS is Optional Process
@@ -185,63 +214,88 @@ def passenger_delete(request,pk):
 
 #Create Process
 def trip_create(request): 
-	message = ""
-	statuses = [i[0] for i in Trip.statuses]
-	drivers = Passenger.objects.filter(is_driver=True)  #ForeignKey process
-	passengers = Passenger.objects.all()
-	context = {"passengers":passengers,"drivers":drivers,
-	"statuses":statuses}
-	if request.method == 'POST':
-		data = request.POST
-		driver_objs = Passenger.objects.filter(is_driver=True,id=data.get("trip_driver"))
-		trip_object =Trip(source=data.get("trip_source"),
-			destination=data.get("trip_destination"),
-			no_of_kms=data.get("trip_kms"),
-			status=data.get("trip_status"),
-			driver=driver_objs[0])
-		trip_object.save() 
-		for passenger_id in data.getlist("trip_passenger"):
-			passenger_obj =Passenger.objects.get(id= passenger_id)   #ManyToMany Process
-			trip_object.Passengers.add(passenger_obj)
+	# message = ""
+	# statuses = [i[0] for i in Trip.statuses]
+	# drivers = Passenger.objects.filter(is_driver=True)  #ForeignKey process
+	# passengers = Passenger.objects.all()
+	# context = {"passengers":passengers,"drivers":drivers,
+	# "statuses":statuses}
+	# if request.method == 'POST':
+	# 	data = request.POST
+	# 	driver_objs = Passenger.objects.filter(is_driver=True,id=data.get("trip_driver"))
+	# 	trip_object =Trip(source=data.get("trip_source"),
+	# 		destination=data.get("trip_destination"),
+	# 		no_of_kms=data.get("trip_kms"),
+	# 		status=data.get("trip_status"),
+	# 		driver=driver_objs[0])
+	# 	trip_object.save() 
+	# 	for passenger_id in data.getlist("trip_passenger"):
+	# 		passenger_obj =Passenger.objects.get(id= passenger_id)   #ManyToMany Process
+	# 		trip_object.Passengers.add(passenger_obj)
 		 
 
-		message = 'Passenger created successfully'
-		return redirect("/trip/trip1/")
-	context.update({"msg":message})
-	return render(request,'bus/create3.html',context)
+	# 	message = 'Passenger created successfully'
+	# 	return redirect("/trip/trip1/")
+	# context.update({"msg":message})
+	# return render(request,'bus/create3.html',context)
+
+
+	message = ""
+	if request.method == 'POST':
+		form = TripForm(data = request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect("/trip/trip1/")
+		else:
+			message = form.errors
+	else:
+		form = TripForm()	
+		
+	return render(request,'bus/create3.html',{'msg':message,'form':form})
 	
 
 #UPDATAE PROCESS
 def trip_update(request,pk):
-	message = ""
-	drivers = Passenger.objects.filter(is_driver=True)  
-	passengers = Passenger.objects.all()
-	context = {"passengers":passengers,"drivers":drivers}
+	# message = ""
+	# drivers = Passenger.objects.filter(is_driver=True)  
+	# passengers = Passenger.objects.all()
+	# context = {"passengers":passengers,"drivers":drivers}
 
-	trip_obj = Trip.objects.get(id=pk)
-	if request.method == "POST":
-		data = request.POST
-		driver_objs = Passenger.objects.filter(is_driver=True,id=data.get("trip_driver"))
-		trip_obj.source = data.get('source')
-		trip_obj.destination = data.get('destination')
-		trip_obj.no_of_kms = data.get('no_of_kms')
-		trip_obj.status = data.get('status')
-		# trip_obj.driver = data.get('driver')
-		trip_obj.driver = driver_objs[0]
-		trip_obj.save()
+	# trip_obj = Trip.objects.get(id=pk)
+	# if request.method == "POST":
+	# 	data = request.POST
+	# 	driver_objs = Passenger.objects.filter(is_driver=True,id=data.get("trip_driver"))
+	# 	trip_obj.source = data.get('source')
+	# 	trip_obj.destination = data.get('destination')
+	# 	trip_obj.no_of_kms = data.get('no_of_kms')
+	# 	trip_obj.status = data.get('status')
+	# 	#trip_obj.driver = data.get('driver')
+	# 	trip_obj.driver = driver_objs[0]
+	# 	trip_obj.save()
 
-		for passenger_id in data.getlist('Passengers'):
-			passenger_obj =Passenger.objects.get(id= passenger_id)   #ManyToMany Process
-			trip_obj.Passengers.add(passenger_obj)
+	# 	for passenger_id in data.getlist('Passengers'):
+	# 		passenger_obj =Passenger.objects.get(id= passenger_id)   #ManyToMany Process
+	# 		trip_obj.Passengers.add(passenger_obj)
 		
 
-		message = 'Passenger update successfully'
-		return redirect("/trip/trip1/")
-	context.update({"msg":message})
-	return render(request,'bus/update3.html',{'trip':trip_obj})
-	#return render(request,'bus/update3.html',context)
+	# 	message = 'Passenger update successfully'
+	# 	return redirect("/trip/trip1/")
+	# context.update({"msg":message})
+	# return render(request,'bus/update3.html',{'trip':trip_obj})
+	# #return render(request,'bus/update3.html',context)
 
 
+	if request.method == 'POST':
+		trip_obj = Trip.objects.get(id=pk)
+		form = TripForm(request.POST,instance =trip_obj)
+		if form.is_valid():
+			form.save()
+			return redirect("/trip/trip1/")
+	else:
+		trip_obj = Trip.objects.get(id=pk)
+		form = TripForm(instance =trip_obj)
+
+	return render(request,'bus/update3.html',{'form':form})
 
 
 #DELETE PROCESS is Optional Process

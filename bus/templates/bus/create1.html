@@ -3,10 +3,7 @@
 	<h1>{{msg}}</h1>
 	<form method="POST">
 		{% csrf_token %}
-		NAME:<input type="text" name="car_name">
-		NUMBER:<input type="text" name="car_number">
-		CAPACITY:<input type="text" name="car_capacity">
-		FAIR:<input type="text" name="car_fair">
+		{{ form.as_table }}
 		<input type="submit" name="" value="create car">
 	</form>
 	

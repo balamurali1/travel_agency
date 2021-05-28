@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.  
 
-class Bus(models.Model): 
+class Bus(models.Model):  
 	passinger_name =models.CharField(max_length = 250) 
 	bus_number =models.CharField(max_length = 50) 
 	pickup_point =models.CharField(max_length = 250) 
